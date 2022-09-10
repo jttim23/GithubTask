@@ -15,8 +15,9 @@ import java.util.Map;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(HttpClientErrorException.class)
-    public ResponseEntity<Object> handleHttpClientErrorException(Exception exception) {
+    public ResponseEntity<Object> handleHttpClientErrorException(HttpClientErrorException exception) {
         Map<String, Object> body = new LinkedHashMap<>();
+        body.put("status", exception.getRawStatusCode());
         body.put("Message", exception.getMessage());
         return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.NOT_FOUND);
 

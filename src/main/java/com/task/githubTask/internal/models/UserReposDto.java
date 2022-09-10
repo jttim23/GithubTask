@@ -8,6 +8,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class UserReposDto {
-
-    private List<UserRepos> userReposResponses;
+    private String name;
+    private Boolean fork;
+    private List<GithubBranch> branches;
+    private String ownerLogin;
 }

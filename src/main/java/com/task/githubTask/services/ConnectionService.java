@@ -2,9 +2,10 @@ package com.task.githubTask.services;
 
 import com.task.githubTask.internal.models.UserReposDto;
 
+import java.util.List;
+
 public interface ConnectionService {
 
-    UserReposDto retrieveUserData(String username);
-
+    List<UserReposDto> retrieveUserData(String username);
 
 }

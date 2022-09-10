@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -48,12 +49,11 @@ public class GithubConnectionServiceTest {
         when(restTemplate.getForEntity(anyString(), any())).thenReturn(ResponseEntity.of(Optional.of(githubRepositoryResponses))
                 , ResponseEntity.of(Optional.of(githubBranchResponses)));
         ConnectionService connectionService = new GithubConnectionService(restTemplate);
-        UserReposDto data = connectionService.retrieveUserData("wewdeeegrtdvd");
+        List<UserReposDto> data = connectionService.retrieveUserData("wewdeeegrtdvd");
 
         assertNotNull(data);
-        assertNotNull(data.getUserReposResponses());
-        assertEquals("testUser", data.getUserReposResponses().get(0).getOwnerLogin());
-        assertEquals("master", data.getUserReposResponses().get(0).getBranches().get(0).getName());
+        assertEquals("testUser", data.get(0).getOwnerLogin());
+        assertEquals("master", data.get(0).getBranches().get(0).getName());
 
     }
 
@@ -67,11 +67,10 @@ public class GithubConnectionServiceTest {
         when(restTemplate.getForEntity(anyString(), any())).thenReturn(ResponseEntity.of(Optional.of(githubRepositoryResponses))
                 , ResponseEntity.of(Optional.of(githubBranchResponses)));
         ConnectionService connectionService = new GithubConnectionService(restTemplate);
-        UserReposDto data = connectionService.retrieveUserData("wewdeeegrtdvd");
+        List<UserReposDto> data = connectionService.retrieveUserData("wewdeeegrtdvd");
 
         assertNotNull(data);
-        assertNotNull(data.getUserReposResponses());
-        assertEquals(1, data.getUserReposResponses().size());
+        assertEquals(1, data.size());
     }
 
     @Test
@@ -80,9 +79,7 @@ public class GithubConnectionServiceTest {
                 ResponseEntity.of(Optional.empty()));
         ConnectionService connectionService = new GithubConnectionService(restTemplate);
 
-        assertThrows(ResponseNotCreatedException.class, () -> {
-            connectionService.retrieveUserData("testUser");
-        });
+        assertThrows(ResponseNotCreatedException.class, () -> connectionService.retrieveUserData("testUser"));
     }
 
     @Test
@@ -90,9 +87,7 @@ public class GithubConnectionServiceTest {
         when(restTemplate.getForEntity(anyString(), any())).thenReturn(ResponseEntity.of(Optional.empty()));
         ConnectionService connectionService = new GithubConnectionService(restTemplate);
 
-        assertThrows(ResponseNotCreatedException.class, () -> {
-            connectionService.retrieveUserData("testUser");
-        });
+        assertThrows(ResponseNotCreatedException.class, () -> connectionService.retrieveUserData("testUser"));
     }
 
 

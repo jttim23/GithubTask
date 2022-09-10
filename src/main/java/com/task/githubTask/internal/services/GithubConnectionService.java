@@ -1,8 +1,11 @@
 package com.task.githubTask.internal.services;
 
-import com.task.githubTask.services.ConnectionService;
 import com.task.githubTask.exceptions.ResponseNotCreatedException;
-import com.task.githubTask.internal.models.*;
+import com.task.githubTask.internal.models.GithubBranch;
+import com.task.githubTask.internal.models.GithubBranchResponse;
+import com.task.githubTask.internal.models.GithubRepositoryResponse;
+import com.task.githubTask.internal.models.UserReposDto;
+import com.task.githubTask.services.ConnectionService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,36 +25,27 @@ public class GithubConnectionService implements ConnectionService {
         this.restTemplate = restTemplate;
     }
 
-    private static List<GithubBranch> mapBranchResponsesToBranches(GithubBranchResponse[] branchResponses) {
-        return Arrays.stream(branchResponses)
-                .map(br -> new GithubBranch(br.getName(), br.getCommit().getSha())).collect(Collectors.toList());
-    }
-
-    private static String createBranchesUrlFrom(String branchesUrl) {
-        return branchesUrl.replace(BRANCH_PATH, "");
-    }
-
     @Override
-    public UserReposDto retrieveUserData(String username) {
+    public List<UserReposDto> retrieveUserData(String username) {
         GithubRepositoryResponse[] githubResponses = getRepositoryResponsesFor(username);
-        return new UserReposDto(getUserReposFrom(githubResponses));
+        return getUserReposFrom(githubResponses);
     }
 
-    private List<UserRepos> getUserReposFrom(GithubRepositoryResponse[] githubResponses) {
+    private List<UserReposDto> getUserReposFrom(GithubRepositoryResponse[] githubResponses) {
         return Arrays.stream(githubResponses)
                 .filter(githubRepositoryResponse -> !githubRepositoryResponse.isForked())
                 .map(this::createUserRepos)
                 .toList();
     }
 
-    private UserRepos createUserRepos(GithubRepositoryResponse response) {
+    private UserReposDto createUserRepos(GithubRepositoryResponse response) {
         String branchesUrl = createBranchesUrlFrom(response.getBranchesUrl());
 
         GithubBranchResponse[] branchResponses = getAllBranchResponsesFrom(branchesUrl);
 
         List<GithubBranch> branches = mapBranchResponsesToBranches(branchResponses);
 
-        return new UserRepos(response.getName(), response.getFork(), branches, response.getOwner().get(LOGIN_KEY));
+        return new UserReposDto(response.getName(), response.getFork(), branches, response.getOwner().get(LOGIN_KEY));
     }
 
     private GithubBranchResponse[] getAllBranchResponsesFrom(String branchesUrl) {
@@ -68,4 +62,12 @@ public class GithubConnectionService implements ConnectionService {
         return githubRepositoryResponses.orElseThrow(ResponseNotCreatedException::new);
     }
 
+    private static List<GithubBranch> mapBranchResponsesToBranches(GithubBranchResponse[] branchResponses) {
+        return Arrays.stream(branchResponses)
+                .map(br -> new GithubBranch(br.getName(), br.getCommit().getSha())).collect(Collectors.toList());
+    }
+
+    private static String createBranchesUrlFrom(String branchesUrl) {
+        return branchesUrl.replace(BRANCH_PATH, "");
+    }
 }
