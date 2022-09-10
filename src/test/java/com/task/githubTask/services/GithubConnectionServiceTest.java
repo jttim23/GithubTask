@@ -1,4 +1,4 @@
-package com.task.githubTask;
+package com.task.githubTask.services;
 
 import com.task.githubTask.exceptions.ResponseNotCreatedException;
 import com.task.githubTask.internal.models.Commit;

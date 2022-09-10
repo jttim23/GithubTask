@@ -48,7 +48,7 @@ class GithubAppMainControllerTest {
         when(connectionService.retrieveUserData(any())).thenReturn(userReposDtos);
         mockMvc.perform(get(GithubAppMainController.BASE_URL + "/owner").accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(1)));
+                .andExpectAll(status().isOk(),jsonPath("$", hasSize(1)));
     }
     @Test
     void givenNotExistingUsername_whenGetUserRepos_theReturns404() throws Exception {
@@ -56,7 +56,7 @@ class GithubAppMainControllerTest {
 
         mockMvc.perform(get(GithubAppMainController.BASE_URL + "/owner").accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound()).andExpect(jsonPath("$", Matchers.aMapWithSize(3)));
+                .andExpectAll(status().isNotFound(),jsonPath("$", Matchers.aMapWithSize(2)));
     }
 
 }
