@@ -25,6 +25,15 @@ public class GithubConnectionService implements ConnectionService {
         this.restTemplate = restTemplate;
     }
 
+    private static List<GithubBranch> mapBranchResponsesToBranches(GithubBranchResponse[] branchResponses) {
+        return Arrays.stream(branchResponses)
+                .map(br -> new GithubBranch(br.getName(), br.getCommit().getSha())).collect(Collectors.toList());
+    }
+
+    private static String createBranchesUrlFrom(String branchesUrl) {
+        return branchesUrl.replace(BRANCH_PATH, "");
+    }
+
     @Override
     public List<UserReposDto> retrieveUserData(String username) {
         GithubRepositoryResponse[] githubResponses = getRepositoryResponsesFor(username);
@@ -60,14 +69,5 @@ public class GithubConnectionService implements ConnectionService {
                 .getForEntity(GITHUB_BASE_API_URL + "/users/" + username + "/repos", GithubRepositoryResponse[].class)
                 .getBody());
         return githubRepositoryResponses.orElseThrow(ResponseNotCreatedException::new);
-    }
-
-    private static List<GithubBranch> mapBranchResponsesToBranches(GithubBranchResponse[] branchResponses) {
-        return Arrays.stream(branchResponses)
-                .map(br -> new GithubBranch(br.getName(), br.getCommit().getSha())).collect(Collectors.toList());
-    }
-
-    private static String createBranchesUrlFrom(String branchesUrl) {
-        return branchesUrl.replace(BRANCH_PATH, "");
     }
 }

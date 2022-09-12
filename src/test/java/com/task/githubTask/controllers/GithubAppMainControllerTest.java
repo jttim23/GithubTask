@@ -28,14 +28,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(GithubAppMainController.class)
 class GithubAppMainControllerTest {
-    @MockBean
-    private ConnectionService connectionService;
-
     @Autowired
     MockMvc mockMvc;
     @Autowired
     ObjectMapper mapper;
     List<UserReposDto> userReposDtos;
+    @MockBean
+    private ConnectionService connectionService;
 
     @BeforeEach
     void setUp() {
@@ -48,15 +47,16 @@ class GithubAppMainControllerTest {
         when(connectionService.retrieveUserData(any())).thenReturn(userReposDtos);
         mockMvc.perform(get(GithubAppMainController.BASE_URL + "/owner").accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpectAll(status().isOk(),jsonPath("$", hasSize(1)));
+                .andExpectAll(status().isOk(), jsonPath("$", hasSize(1)));
     }
+
     @Test
     void givenNotExistingUsername_whenGetUserRepos_theReturns404() throws Exception {
-        when(connectionService.retrieveUserData(any())).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND,"User not found"));
+        when(connectionService.retrieveUserData(any())).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, "User not found"));
 
         mockMvc.perform(get(GithubAppMainController.BASE_URL + "/owner").accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpectAll(status().isNotFound(),jsonPath("$", Matchers.aMapWithSize(2)));
+                .andExpectAll(status().isNotFound(), jsonPath("$", Matchers.aMapWithSize(2)));
     }
 
 }

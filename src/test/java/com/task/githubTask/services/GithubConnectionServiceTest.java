@@ -6,7 +6,6 @@ import com.task.githubTask.internal.models.GithubBranchResponse;
 import com.task.githubTask.internal.models.GithubRepositoryResponse;
 import com.task.githubTask.internal.models.UserReposDto;
 import com.task.githubTask.internal.services.GithubConnectionService;
-import com.task.githubTask.services.ConnectionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
